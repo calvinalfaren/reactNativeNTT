@@ -10,16 +10,36 @@ import {
 import Icon from 'react-native-vector-icons/FontAwesome';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import moment from 'moment';
+import axios from "axios";
 
 const ProductDetailContainer = ({route}) => {
   const [item, setItem] = useState(route.params);
   const [data, setData] = useState([]);
   const [wishlist, setWishlist] = useState(false);
 
+  const baseUrl = 'http://192.168.1.8:8000/api/';
+
   useEffect(
-    () => {
+    (id) => {
       if (data == null || data.length == 0) {
+        const source = axios.CancelToken.source();
+        const url = `${baseUrl}product/detail/${id}`;
+        const fetchProductDetail = async () => {
+          try {
+            const response = await axios.get(url);
+            console.log(response.data);
+            
+          } catch (error) {
+            if(axios.isCancel(error)){
+              console.log('Data fetching cancelled');
+            }else{
+            // Handle error
+            }
+          }
+        };
+        fetchProductDetail();
         getData()
+        return () => source.cancel("Data fetching cancelled");
       }
     }
   )
